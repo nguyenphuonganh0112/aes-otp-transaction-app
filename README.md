@@ -128,7 +128,7 @@ This section explains the exact encryption/decryption logic implemented in the c
 
 ### Step 4 — Encrypted OTP Verification (180s limit)
 - The user copies the **encrypted OTP string** from email and pastes it into the app.
-- The system verifies using 2 checks (matches code):
+- The system verifies using 2 checks:
   1) The pasted value must equal the encrypted OTP that was sent.
   2) After decrypting, the OTP must match the original generated OTP.
 - OTP must be verified within **180 seconds**; otherwise the transaction is cancelled.
