@@ -49,7 +49,7 @@ pip install -r requirements.txt
 
 ---
 
-## Quick Starts
+## Quick Start
 1) Set environment variables (Windows CMD)
 
 ```bash
