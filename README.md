@@ -21,11 +21,25 @@ A Python Tkinter desktop application that simulates a secure electronic transact
 
 ## Overview
 
-This project demonstrates a basic secure transaction workflow:
-1. User registers → credentials are hashed with SHA-256.
-2. Transaction amount is encrypted using AES (CBC mode).
-3. An OTP is generated, encrypted, and sent via email.
-4. User verifies OTP within 180 seconds to confirm the transaction.
+This project demonstrates a secure electronic transaction workflow combining AES encryption and OTP-based two-factor authentication (2FA).
+
+Unlike basic encryption demos, this system introduces a dynamic key derivation mechanism, where the AES encryption key is deterministically derived from the user’s password using SHA-256. This design eliminates the need to store static encryption keys and reduces the risk of centralized key exposure.
+
+The transaction flow includes:
+
+1. User registration → credentials are hashed using SHA-256 before storage.
+
+2. During login, the system verifies hashed credentials and derives an AES key from the user’s password.
+
+3. The transaction amount is encrypted using AES (CBC mode) with a dynamically generated key.
+
+4. A 6-digit OTP is generated, encrypted with AES, and delivered via email.
+
+5. The user must submit the encrypted OTP within 180 seconds to complete verification.
+
+6. The system limits authentication attempts to enhance security.
+
+This architecture demonstrates a user-specific encryption model, where each transaction is protected by a password-derived key combined with time-limited OTP verification.
 
 ---
 
