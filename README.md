@@ -15,6 +15,7 @@ A Python Tkinter desktop application that simulates a secure electronic transact
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Security Design](#security-design)
+- [Detailed 2FA + AES-CBC Process](#detailed-2fa--aes-cbc-process)
 - [Secure Transaction Workflow](#secure-transaction-workflow)
 
 ---
@@ -102,6 +103,49 @@ OTP expires after 180 seconds
 
 Maximum 3 failed attempts allowed
 
+---
+
+## Detailed 2FA + AES-CBC Process 
+
+This section explains the exact encryption/decryption logic implemented in the code.
+
+### Step 1 — Account Registration (SHA-256)
+- The user inputs **email + password**.
+- The system hashes both using **SHA-256** and stores only hashed values (no plaintext).
+
+### Step 2 — Login + Key Derivation
+- During login, the system hashes the input credentials again and compares them with stored hashes.
+- If matched, the system derives a **user-specific AES-256 key** deterministically from the password:
+
+  `AES_key = SHA-256(password)` (32 bytes)
+
+> The AES key is **not stored** as a fixed key in the system; it is re-derived when needed.
+
+### Step 3 — AES-CBC Encryption (Transaction + OTP)
+- The transaction amount is encrypted using **AES-CBC** with a **random IV**.
+- A random **6-digit OTP** is generated, then encrypted using **AES-CBC** with the same password-derived key.
+- The encrypted OTP is delivered via email.
+
+### Step 4 — Encrypted OTP Verification (180s limit)
+- The user copies the **encrypted OTP string** from email and pastes it into the app.
+- The system verifies using 2 checks (matches code):
+  1) The pasted value must equal the encrypted OTP that was sent.
+  2) After decrypting, the OTP must match the original generated OTP.
+- OTP must be verified within **180 seconds**; otherwise the transaction is cancelled.
+- The system also limits authentication failures (e.g., login) to improve security.
+
+### Step 5 — Receiver-side Decryption
+- After successful OTP verification, the receiver can decrypt and view the original transaction amount using the same password-derived key.
+
+### Encrypted Data Format (IV + Ciphertext)
+Both OTP and transaction ciphertext are stored as:
+
+- `encrypted = base64(IV) + base64(ciphertext)`
+- In this implementation, `base64(IV)` is always **24 characters** (16-byte IV → base64 length 24).
+- During decryption, the system splits:
+  - `IV = encrypted[:24]`
+  - `ciphertext = encrypted[24:]`
+ 
 ---
 
 ## Secure Transaction Workflow
