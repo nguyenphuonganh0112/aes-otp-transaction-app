@@ -60,6 +60,9 @@ set SENDER_PASSWORD=your_app_password
 ```bash
 python main.py
 ```
+
+---
+
 ## Security Design
 1. Credential Protection
 
@@ -85,4 +88,8 @@ OTP expires after 180 seconds
 
 Maximum 3 failed attempts allowed
 
+---
+
 ## Secure Transaction Workflow
+
+![System Workflow](assets/system_workflow.png)
